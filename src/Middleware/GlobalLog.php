@@ -26,13 +26,14 @@ class GlobalLog implements MiddlewareInterface
     public function process(Request $request, callable $handler): Response
     {
         $start = microtime(true);
+        $trace_id = $start . 's' . uniqid(mt_rand(10000, 99999), true);
         // 获取请求信息
         $data = [
             'ip' => $this->getIp($request),
             'uri' => $request->uri(),
             'method' => $request->method(),
             'appid' => '', // TODO 业务数据，如果项目中可直接获取到appid，记录在此处
-            'trace_id' => $request->header('trace_id', microtime(true) . uniqid('uniqid', true)) . mt_rand(10000, 99999),
+            'trace_id' => $request->header('trace_id', $trace_id),
             'referer' => $request->header('referer'),
             'user_agent' => $request->header('user-agent'),
             'query' => $request->all(),
@@ -53,7 +54,19 @@ class GlobalLog implements MiddlewareInterface
         }
 
         $data['errcode'] = $response->getStatusCode();
-        $data['response'] = $response->rawBody();
+        $rawBody = $response->rawBody();
+        if (60000 < strlen($rawBody)) {
+            $date = date('Ymd');
+            $filepath = "/logs/$date/$trace_id.log";
+            $filename = runtime_path() . $filepath;
+            $parent_dir = dirname($filename);
+            if (!is_dir($parent_dir)) {
+                mkdir($parent_dir, 0777, true);
+            }
+            file_put_contents($filename, $rawBody);
+            $rawBody = $filepath;
+        }
+        $data['response'] = $rawBody;
         $end = microtime(true);
         $exec_time = round(($end - $start) * 1000, 2);
         $data['exec_time'] = $exec_time;
@@ -151,7 +164,7 @@ class GlobalLog implements MiddlewareInterface
                 $table->string('errcode', 10)->nullable(true)->default(null)->comment('响应错误码');
                 $table->text('response')->nullable(true)->default(null)->comment('响应结果');
                 $table->text('exception')->nullable(true)->default(null)->comment('异常信息');
-                $table->text('exec_time')->nullable(true)->default(null)->comment('执行时间，单位毫秒');
+                $table->text('exec_time')->nullable(true)->default(null)->comment('执行毫秒');
                 $table->text('cookie')->nullable(true)->default(null)->comment('请求cookie');
                 $table->dateTime('created_at')->nullable(true)->default(null)->comment('创建时间');
 
