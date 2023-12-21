@@ -153,7 +153,7 @@ class GlobalLog implements MiddlewareInterface
                 $table->text('exception')->nullable(true)->default(null)->comment('异常信息');
                 $table->text('exec_time')->nullable(true)->default(null)->comment('执行时间，单位毫秒');
                 $table->text('cookie')->nullable(true)->default(null)->comment('请求cookie');
-                $table->dateTime('created_at')->nullable(true)->default(null);
+                $table->dateTime('created_at')->nullable(true)->default(null)->comment('创建时间');
 
                 $table->index('ip', 'ip');
                 $table->index('uri', 'uri');
