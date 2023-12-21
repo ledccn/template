@@ -143,7 +143,7 @@ class GlobalLog implements MiddlewareInterface
                 $table->string('ip', 20)->nullable(true)->default(null)->comment('访问ip');
                 $table->string('uri', 255)->nullable(true)->default(null)->comment('访问uri');
                 $table->string('method', 10)->nullable(true)->default(null)->comment('请求方法');
-                $table->string('appid', 50)->nullable(true)->default(null)->comment('应用平台appid');
+                $table->string('appid', 50)->nullable(true)->default(null)->comment('应用appid');
                 $table->string('trace_id', 255)->nullable(true)->default(null)->comment('trace_id');
                 $table->text('referer')->nullable(true)->default(null)->comment('来源页');
                 $table->text('user_agent')->nullable(true)->default(null)->comment('user_agent');
