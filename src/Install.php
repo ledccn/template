@@ -14,6 +14,7 @@ class Install
      * 初次安装时需要覆盖的文件.
      */
     public const overwrite = [
+        'app/model/WaUserObserver.stub' => 'app/model/WaUserObserver.php',
         'app/Bootstrap.stub' => 'app/Bootstrap.php',
         'app/ExceptionHandler.stub' => 'app/ExceptionHandler.php',
         'config/database.php' => 'config/database.php',

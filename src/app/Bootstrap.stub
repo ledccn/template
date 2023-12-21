@@ -2,6 +2,9 @@
 
 namespace app;
 
+use app\model\WaUserObserver;
+use plugin\admin\app\model\User as WaUserByPluginAdmin;
+use plugin\user\app\model\User as WaUserByPluginUser;
 use Workerman\Worker;
 
 /**
@@ -24,5 +27,13 @@ class Bootstrap implements \Webman\Bootstrap
 
         // updating 和 updated 会在数据库中的真值修改前后触发。
         // saving 和 saved 则会在 Eloquent 实例的 original 数组真值更改前后触发
+
+        // 注册webman用户模型观察者
+        if (class_exists(WaUserByPluginAdmin::class)) {
+            WaUserByPluginAdmin::observe(WaUserObserver::class);
+        }
+        if (class_exists(WaUserByPluginUser::class)) {
+            WaUserByPluginUser::observe(WaUserObserver::class);
+        }
     }
 }
