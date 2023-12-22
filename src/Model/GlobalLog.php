@@ -60,12 +60,10 @@ class GlobalLog extends Base
      */
     public function __construct(array $attributes = [])
     {
-        if (empty($this->getTable())) {
-            if (empty(static::$tableSuffix)) {
-                static::$tableSuffix = static::builderTableSuffix(date('Ymd'));
-            }
-            $this->setTable(self::TABLE_NAME . static::$tableSuffix);
+        if (empty(static::$tableSuffix)) {
+            static::$tableSuffix = static::builderTableSuffix(date('Ymd'));
         }
+        $this->setTable(self::TABLE_NAME . static::$tableSuffix);
         parent::__construct($attributes);
     }
 
