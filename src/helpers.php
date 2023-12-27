@@ -2,6 +2,33 @@
 
 namespace Ledc\Template;
 
+use support\Redis;
+
+/**
+ * Redis的setNx指令，支持同时设置ttl
+ * - 使用lua脚本实现
+ * @param string $key 缓存的key
+ * @param string $value 缓存的value
+ * @param int $ttl 存活的ttl，单位秒
+ * @return bool
+ */
+function redis_set_nx(string $key, string $value, int $ttl = 10): bool
+{
+    static $scriptSha = null;
+    if (!$scriptSha) {
+        $script = <<<luascript
+            local result = redis.call('SETNX', KEYS[1], ARGV[1]);
+            if result == 1 then
+                return redis.call('expire', KEYS[1], ARGV[2])
+            else
+                return 0
+            end
+luascript;
+        $scriptSha = Redis::script('load', $script);
+    }
+    return (bool)Redis::rawCommand('evalsha', $scriptSha, 1, $key, $value, $ttl);
+}
+
 /**
  * 简单的POST请求
  * - 用curl实现.
