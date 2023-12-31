@@ -17,16 +17,39 @@ function redis_set_nx(string $key, string $value, int $ttl = 10): bool
     static $scriptSha = null;
     if (!$scriptSha) {
         $script = <<<luascript
-            local result = redis.call('SETNX', KEYS[1], ARGV[1]);
-            if result == 1 then
-                return redis.call('expire', KEYS[1], ARGV[2])
-            else
-                return 0
-            end
+local result = redis.call('SETNX', KEYS[1], ARGV[1]);
+if result == 1 then
+    return redis.call('expire', KEYS[1], ARGV[2])
+else
+    return 0
+end
 luascript;
         $scriptSha = Redis::script('load', $script);
     }
     return (bool)Redis::rawCommand('evalsha', $scriptSha, 1, $key, $value, $ttl);
+}
+
+/**
+ * Redis的incr指令，支持设置ttl
+ * - 使用lua脚本实现
+ * @param string $key 缓存的key
+ * @param int $ttl 存活的ttl，单位秒
+ * @return int
+ */
+function redis_incr(string $key, int $ttl = 10): int
+{
+    static $scriptSha = null;
+    if (!$scriptSha) {
+        $script = <<<luascript
+if redis.call('set', KEYS[1], ARGV[1], "EX", ARGV[2], "NX") then
+    return ARGV[1]
+else
+    return redis.call('incr', KEYS[1])
+end
+luascript;
+        $scriptSha = Redis::script('load', $script);
+    }
+    return (int)Redis::rawCommand('evalsha', $scriptSha, 1, $key, 1, $ttl);
 }
 
 /**
