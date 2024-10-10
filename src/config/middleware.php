@@ -13,7 +13,6 @@ return [
         // Ledc\Template\Middleware\Lang::class,
     ],
     'api' => [
-        Ledc\Template\Middleware\UserMiddleware::class,
     ],
     'admin' => [
         plugin\admin\api\Middleware::class,

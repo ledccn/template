@@ -8,7 +8,7 @@ namespace Ledc\Template\Model;
  */
 class GlobalLogObserver
 {
-   /**
+    /**
      * 监听数据即将创建的事件。
      *
      * @param GlobalLog $model
@@ -106,5 +106,5 @@ class GlobalLogObserver
      */
     public function restored(GlobalLog $model): void
     {
-    } 
+    }
 }

@@ -8,12 +8,12 @@ namespace Ledc\Template;
 class Install
 {
     /** @var bool */
-    public const WEBMAN_PLUGIN = true;
+    public const bool WEBMAN_PLUGIN = true;
 
     /**
      * 初次安装时需要覆盖的文件.
      */
-    public const overwrite = [
+    public const array overwrite = [
         'app/model/WaUserObserver.stub' => 'app/model/WaUserObserver.php',
         'app/Bootstrap.stub' => 'app/Bootstrap.php',
         'app/ExceptionHandler.stub' => 'app/ExceptionHandler.php',

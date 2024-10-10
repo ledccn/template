@@ -16,9 +16,7 @@ class SessionId implements MiddlewareInterface
     {
         $token = $request->header('token', $request->cookie('token'));
         if ($token && ctype_alnum($token) && strlen($token) <= 70) {
-            if (method_exists($request, 'setSid')) {
-                $request->setSid($token);
-            }
+            $request->sessionId($token);
         }
 
         return $handler($request);

@@ -32,7 +32,7 @@ class GlobalLog extends Base
     /**
      * 数据表名
      */
-    protected const TABLE_NAME = 'global_log';
+    protected const string TABLE_NAME = 'global_log';
 
     /**
      * The table associated with the model.

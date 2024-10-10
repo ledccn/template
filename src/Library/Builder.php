@@ -23,7 +23,7 @@ class Builder extends MakeModelCommand
         $this->addArgument('type', InputArgument::OPTIONAL, 'Type', 'tp');
     }
 
-    protected function createModel($class, $namespace, $file): void
+    protected function createModel($class, $namespace, $file, $connection = null): void
     {
         $path = pathinfo($file, PATHINFO_DIRNAME);
         if (!is_dir($path)) {
@@ -117,7 +117,7 @@ EOF;
         file_put_contents(dirname($file) . "/Has{$class}.php", $trait_content);
     }
 
-    protected function createTpModel($class, $namespace, $file): void
+    protected function createTpModel($class, $namespace, $file, $connection = null): void
     {
         $path = pathinfo($file, PATHINFO_DIRNAME);
         if (!is_dir($path)) {

@@ -53,6 +53,34 @@ luascript;
 }
 
 /**
+ * 用Redis限流
+ * - 使用lua脚本实现
+ * @param string $key 限制资源：KEY
+ * @param int $limit 限制规则：次数
+ * @param int $window_time 窗口时间，单位：秒
+ * @return int
+ */
+function redis_rate_limiter(string $key, int $limit, int $window_time = 10): int
+{
+    static $scriptSha = null;
+    if (!$scriptSha) {
+        $script = <<<luascript
+if redis.call('set', KEYS[1], 1, "EX", ARGV[2], "NX") then
+    return 1
+else
+    if tonumber(redis.call("GET", KEYS[1])) >= tonumber(ARGV[1]) then
+        return 0
+    else
+        return redis.call("INCR", KEYS[1])
+    end
+end
+luascript;
+        $scriptSha = Redis::script('load', $script);
+    }
+    return (int)Redis::rawCommand('evalsha', $scriptSha, 1, $key, $limit, $window_time);
+}
+
+/**
  * 简单的POST请求
  * - 用curl实现.
  *
@@ -103,53 +131,17 @@ function http_post_request_curl(string $url, array|object $data = [], bool $isJs
 }
 
 /**
- * 简单的POST请求
- * - 用file_get_contents实现.
- *
- * @param string $url 请求地址
- * @param array|object $data 数据包
- * @param bool $isJsonRequest 是否Json请求
- *
- * @return false|string
- */
-function http_post_request(string $url, array|object $data, bool $isJsonRequest = false): bool|string
-{
-    if ($isJsonRequest) {
-        $type = 'Content-Type: application/json; charset=UTF-8';
-        $data = json_encode($data, JSON_UNESCAPED_UNICODE);
-    } else {
-        $type = 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8';
-        $data = http_build_query($data);
-    }
-    $opts = [
-        'http' => [
-            'method' => 'POST',
-            'header' => $type . "\r\n" . 'Content-Length: ' . strlen($data) . "\r\n",
-            'content' => $data,
-            'timeout' => 5,
-        ],
-        // 解决SSL证书验证失败的问题
-        'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
-        ],
-    ];
-    $context = stream_context_create($opts);
-
-    return file_get_contents($url, false, $context);
-}
-
-/**
  * 获取当前版本commit.
  */
 function current_git_commit(string $branch = 'master', bool $short = true): string
 {
-    if ($hash = file_get_contents(sprintf(base_path() . '/.git/refs/heads/%s', $branch))) {
+    $filename = sprintf(base_path() . '/.git/refs/heads/%s', $branch);
+    clearstatcache();
+    if (is_file($filename)) {
+        $hash = file_get_contents($filename);
         $hash = trim($hash);
-
         return $short ? substr($hash, 0, 7) : $hash;
     }
-
     return '';
 }
 
@@ -158,9 +150,11 @@ function current_git_commit(string $branch = 'master', bool $short = true): stri
  */
 function current_git_filemtime(string $branch = 'master', string $format = 'Y-m-d H:i:s'): string
 {
-    if ($time = filemtime(sprintf(base_path() . '/.git/refs/heads/%s', $branch))) {
+    $filename = sprintf(base_path() . '/.git/refs/heads/%s', $branch);
+    clearstatcache();
+    if (is_file($filename)) {
+        $time = filemtime($filename);
         return date($format, $time);
     }
-
     return '';
 }
