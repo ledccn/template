@@ -9,5 +9,5 @@ if (!defined('plugin_ledc_template_app')) {
 
 return [
     'enable' => true,
-    'version' => '',
+    'version' => '1.0.0',
 ];

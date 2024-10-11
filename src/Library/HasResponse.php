@@ -11,19 +11,7 @@ use support\Response;
 trait HasResponse
 {
     /**
-     * 成功响应.
-     *
-     * @param string $msg 消息
-     * @param array $data 数据
-     */
-    final protected function success(string $msg = 'ok', array $data = []): Response
-    {
-        return $this->json($this->getSuccessCode(), $msg, $data);
-    }
-
-    /**
-     * 响应.
-     *
+     * 响应
      * @param int $code 响应码
      * @param string $msg 消息
      * @param array $data 数据
@@ -34,7 +22,40 @@ trait HasResponse
     }
 
     /**
-     * 获取成功时候的响应码
+     * 成功响应
+     * @param string $msg 消息
+     * @param array $data 数据
+     */
+    final protected function success(string $msg = 'ok', array $data = []): Response
+    {
+        return $this->json($this->getSuccessCode(), $msg, $data);
+    }
+
+    /**
+     * 成功响应
+     * @param array $data 数据
+     * @return Response
+     */
+    final protected function dataSuccess(array $data = []): Response
+    {
+        return $this->json($this->getSuccessCode(), 'ok', $data);
+    }
+
+    /**
+     * 失败响应
+     * @param string $msg 消息
+     * @param int $code 响应码
+     * @param array $data
+     * @return Response
+     */
+    final protected function fail(string $msg = 'fail', int $code = 1, array $data = []): Response
+    {
+        return $this->json($this->getSuccessCode() === $code ? $this->getErrorCode() : $code, $msg, $data);
+    }
+
+    /**
+     * 获取成功响应码
+     * @return int
      */
     protected function getSuccessCode(): int
     {
@@ -42,14 +63,12 @@ trait HasResponse
     }
 
     /**
-     * 失败响应.
-     *
-     * @param string $msg 消息
-     * @param int $code 响应码
+     * 获取失败响应码
+     * @return int
      */
-    final protected function fail(string $msg = 'fail', int $code = 1, array $data = []): Response
+    protected function getErrorCode(): int
     {
-        return $this->json($this->getSuccessCode() === $code ? 1 : $code, $msg, $data);
+        return 1;
     }
 
     /**
@@ -57,7 +76,7 @@ trait HasResponse
      * @param array $items
      * @return array
      */
-    final protected function formatEnum(array $items): array
+    final protected function formatSelectEnums(array $items): array
     {
         $formatted = [];
         foreach ($items as $name => $value) {

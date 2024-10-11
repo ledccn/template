@@ -33,7 +33,7 @@ namespace {$namespace};
  */
 class {$observer}
 {
-   /**
+    /**
      * 监听数据即将创建的事件。
      *
      * @param {$class} \$model

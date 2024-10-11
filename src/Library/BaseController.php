@@ -10,7 +10,6 @@ use support\Model;
 abstract class BaseController
 {
     use HasResponse;
-    use HasThinkValidate;
 
     /**
      * 数据模型.
