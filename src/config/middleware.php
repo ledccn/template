@@ -8,8 +8,8 @@
 
 return [
     '' => [
-        Ledc\Template\Middleware\AllowOrigin::class,
-        Ledc\Template\Middleware\SessionId::class,
+        // Ledc\Template\Middleware\AllowOrigin::class,
+        // Ledc\Template\Middleware\SessionId::class,
         // Ledc\Template\Middleware\Lang::class,
     ],
     'api' => [

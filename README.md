@@ -8,6 +8,12 @@
 composer require ledc/template
 ```
 
+忽略扩展安装
+
+```sh
+composer require ledc/template --ignore-platform-req=ext-redis --ignore-platform-req=ext-posix -W
+```
+
 ## 运行环境
 
-PHP版本：^8.1|^8.2|^8.3
+PHP版本：^8.3
