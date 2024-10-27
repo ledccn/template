@@ -14,6 +14,15 @@ class Request extends \Webman\Http\Request
     use Macro;
 
     /**
+     * 判断是否通过微信客户端访问
+     * @return bool
+     */
+    public function isWechat(): bool
+    {
+        return str_contains(request()->header('user-agent', ''), 'MicroMessenger');
+    }
+
+    /**
      * 仅允许GET请求
      * @return self
      * @throws BusinessException
