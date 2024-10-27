@@ -23,6 +23,22 @@ class Request extends \Webman\Http\Request
     }
 
     /**
+     * 判断是否通过移动端访问
+     * @return bool
+     */
+    public function isMobile(): bool
+    {
+        $userAgent = $this->header('user-agent');
+        $mobileAgents = ["Android", "iPhone", "iPod", "iPad", "Windows Phone", "BlackBerry", "SymbianOS"];
+        foreach ($mobileAgents as $needle) {
+            if (str_contains($userAgent, $needle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * 仅允许GET请求
      * @return self
      * @throws BusinessException
